@@ -173,7 +173,7 @@ CHECK_LOOP:
     ; Passo C: Comparamos os 3 valores (exatamente como você fazia antes)
     cmp al, dl
     jnz NEXT_LINE            ; Se falhar, pula para testar a próxima combinação
-    cmp dl, ah
+    cmp dl, r11b             ; CORRIGIDO: Agora compara com o registrador correto!
     jnz NEXT_LINE            ; Se falhar, pula para a próxima
 
     ; Se sobreviveu aos pulos acima, alguém venceu!

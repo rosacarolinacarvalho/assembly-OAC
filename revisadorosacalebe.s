@@ -434,9 +434,9 @@ TRYAGAIN:
     mov al, byte [IN_CHAR]
     
     cmp al, 115  ; s
-    jz INIT
+    jz INICIARTABULEIRO
     cmp al, 83   ; S
-    jz INIT
+    jz INICIARTABULEIRO
         
     cmp al, 110  ; n
     jz EXIT

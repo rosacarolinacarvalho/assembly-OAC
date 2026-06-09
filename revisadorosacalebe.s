@@ -40,12 +40,6 @@ INICIO:
     mov edx, T2_len
     lea rsi, [T2]
     call print_string
-
-  
-
-    mov edx, T2_len
-    lea rsi, [T2]
-    call print_string
         
     mov edx, continuar_len
     lea rsi, [continuar]

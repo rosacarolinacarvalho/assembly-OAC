@@ -174,7 +174,7 @@ CHECK_LOOP:
     lea rbx, [C1]            ; RBX aponta para o início do tabuleiro (C1)
     mov al, byte [rbx + r8]  ; AL recebe o valor do tabuleiro no índice 1
     mov dl, byte [rbx + r9]  ; DL recebe o valor do tabuleiro no índice 2
-    mov ah, byte [rbx + r10] ; AH recebe o valor do tabuleiro no índice 3
+    mov r11b, byte [rbx + r10] ; MUDADO: r11b no lugar de ah para evitar o erro de REX prefix
 
     ; Passo C: Comparamos os 3 valores (exatamente como você fazia antes)
     cmp al, dl

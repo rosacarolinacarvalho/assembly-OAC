@@ -7,95 +7,95 @@ main:
     jmp INICIO
 
 ; ----------- FUNÇÕES AUXILIARES DE SISTEMA (MUDADAS PARA O TOPO) -----------
-print_string:
+imprimir_string:
     mov edi, 1   ; stdout
     mov eax, 1   ; sys_write
     syscall
     ret
 
-read_input:
+ler_entrada:
     mov edx, 16
-    lea rsi, [IN_BUFFER]
+    lea rsi, [BUFFER_ENTRADA]
     mov edi, 0   ; stdin
     mov eax, 0   ; sys_read
     syscall
-    mov al, byte [IN_BUFFER]
-    mov byte [IN_CHAR], al
+    mov al, byte [BUFFER_ENTRADA]
+    mov byte [CARACTERE_LIDO], al
     ret
 
-clear_screen:
+limpar_tela:
     mov edx, ANSI_cls_len
     lea rsi, [ANSI_cls]
-    call print_string
+    call imprimir_string
     ret
 
 ; --------- EXIBIÇÃO DA TELA DE TÍTULO ---------     
 INICIO:
-    call clear_screen
+    call limpar_tela
     
     mov edx, T1_len
     lea rsi, [T1]
-    call print_string
+    call imprimir_string
 
     mov edx, T2_len
     lea rsi, [T2]
-    call print_string
+    call imprimir_string
         
     mov edx, continuar_len
     lea rsi, [continuar]
-    call print_string
+    call imprimir_string
         
-    call read_input
+    call ler_entrada
     jmp REGRAS
 
 ; ----------- EXIBIÇÃO DAS REGRAS DO JOGO --------------                                                 
 REGRAS:
-    call clear_screen
+    call limpar_tela
     mov edx, R_len
     lea rsi, [R]
-    call print_string
+    call imprimir_string
         
     mov edx, R1_len
     lea rsi, [R1]
-    call print_string 
+    call imprimir_string 
 
     mov edx, R2_len
     lea rsi, [R2]
-    call print_string 
+    call imprimir_string 
         
     mov edx, R3_len
     lea rsi, [R3]
-    call print_string 
+    call imprimir_string 
         
     mov edx, R4_len
     lea rsi, [R4]
-    call print_string 
+    call imprimir_string 
             
     mov edx, R5_len
     lea rsi, [R5]
-    call print_string 
+    call imprimir_string 
             
     mov edx, R6_len
     lea rsi, [R6]
-    call print_string 
+    call imprimir_string 
              
     mov edx, R7_len
     lea rsi, [R7]
-    call print_string 
+    call imprimir_string 
             
-    mov edx, PAK_len
-    lea rsi, [PAK]
-    call print_string 
+    mov edx, continuar_len
+    lea rsi, [continuar]
+    call imprimir_string 
         
-    call read_input 
+    call ler_entrada 
     jmp INICIARTABULEIRO
  
 INICIARTABULEIRO: 
     mov byte [jogador], 49      
-    mov byte [CUR], 88       
-    mov byte [MOVES], 0  
-    mov byte [DONE], 0
-    mov byte [DR], 0 
+    mov byte [SIMBOLO_ATUAL], 88       
+    mov byte [JOGADAS], 0  
+    mov byte [VENCEDOR_ENCONTRADO], 0
+    mov byte [FLAG_EMPATE], 0 
             
     mov byte [C1], 49         
     mov byte [C2], 50
@@ -107,58 +107,58 @@ INICIARTABULEIRO:
     mov byte [C8], 56
     mov byte [C9], 57
                                      
-    jmp BOARD
+    jmp TABULEIRO
 
 ; ------------ TELA DE VITÓRIA ------------------------
-VICTORY:
+VITORIA:
     mov edx, BR_len
     lea rsi, [BR]
-    call print_string
+    call imprimir_string
 
     mov edx, W1_len
     lea rsi, [W1]
-    call print_string
+    call imprimir_string
             
     mov edx, 1
     lea rsi, [jogador]
-    call print_string
+    call imprimir_string
             
     mov edx, W2_len
     lea rsi, [W2]
-    call print_string
+    call imprimir_string
                 
-    mov edx, PAK_len
-    lea rsi, [PAK]
-    call print_string
+    mov edx, continuar_len
+    lea rsi, [continuar]
+    call imprimir_string
             
-    call read_input    
-    jmp TRYAGAIN 
+    call ler_entrada    
+    jmp TENTAR_DE_NOVO 
             
 ; ------------ TELA DE EMPATE ------------  
-DRAW:
+EMPATE:
     mov edx, BR_len
     lea rsi, [BR]
-    call print_string
+    call imprimir_string
 
-    mov edx, DRW_len
-    lea rsi, [DRW]
-    call print_string 
+    mov edx, EMPATEW_len
+    lea rsi, [EMPATEW]
+    call imprimir_string 
                 
-    mov edx, PAK_len
-    lea rsi, [PAK]
-    call print_string
+    mov edx, continuar_len
+    lea rsi, [continuar]
+    call imprimir_string
             
-    call read_input    
-    jmp TRYAGAIN                      
+    call ler_entrada    
+    jmp TENTAR_DE_NOVO                      
 
 ; ------------ VERIFICAÇÃO DAS CONDIÇÕES DE VITÓRIA -----------
 
 ;aterado Rosa
-CHECK:
-    lea rsi, [WIN_LINES]  ; RSI agora aponta para o nosso "gabarito" de vitórias
+VERIFICA:
+    lea rsi, [LINHAS_VITORIA]  ; RSI agora aponta para o nosso "gabarito" de vitórias
     mov rcx, 8            ; RCX será nosso contador de loop (temos 8 chances de ganhar)
 
-CHECK_LOOP:
+CHECAR_LOOP:
     ; Passo A: Lemos os 3 índices da combinação atual
     movzx r8, byte [rsi]     ; Pega o 1º índice (ex: 0)
     movzx r9, byte [rsi+1]   ; Pega o 2º índice (ex: 1)
@@ -172,55 +172,55 @@ CHECK_LOOP:
 
     ; Passo C: Comparamos os 3 valores (exatamente como você fazia antes)
     cmp al, dl
-    jnz NEXT_LINE            ; Se falhar, pula para testar a próxima combinação
+    jnz PROXIMA_COMBINACAO            ; Se falhar, pula para testar a próxima combinação
     cmp dl, ah
-    jnz NEXT_LINE            ; Se falhar, pula para a próxima
+    jnz PROXIMA_COMBINACAO            ; Se falhar, pula para a próxima
 
     ; Se sobreviveu aos pulos acima, alguém venceu!
-    mov byte [DONE], 1
-    jmp BOARD
+    mov byte [VENCEDOR_ENCONTRADO], 1
+    jmp TABULEIRO
 
-NEXT_LINE:
+PROXIMA_COMBINACAO:
     add rsi, 3            ; Avança o ponteiro RSI em 3 bytes (para a próxima linha do gabarito)
     dec rcx               ; Diminui nosso contador de 8 para 7, 6...
-    jnz CHECK_LOOP        ; Se o contador não for Zero, volta para CHECK_LOOP
+    jnz CHECAR_LOOP        ; Se o contador não for Zero, volta para CHECAR_LOOP
 
-    ; Se o contador chegou a zero e não pulou para BOARD, checa empate
-    jmp DRAWCHECK
+    ; Se o contador chegou a zero e não pulou para TABULEIRO, checa empate
+    jmp CHECA_EMPATE
     
-    DRAWCHECK:
-        mov al, [MOVES]
+    CHECA_EMPATE:
+        mov al, [JOGADAS]
         cmp al, 9
-        jb PLRCHANGE
-        mov byte [DR], 1
-        jmp BOARD
+        jb TROCA_JOGADOR
+        mov byte [FLAG_EMPATE], 1
+        jmp TABULEIRO
 
 ; ------------ ALTERNÂNCIA DE JOGADOR ----------        
-PLRCHANGE:
+TROCA_JOGADOR:
     cmp byte [jogador], 49
-    jz SET_P2
+    jz DEFINIR_JOGADOR_2
     
     mov byte [jogador], 49
-    mov byte [CUR], 88     ; 'X'
-    jmp BOARD
+    mov byte [SIMBOLO_ATUAL], 88     ; 'X'
+    jmp TABULEIRO
          
-    SET_P2:
+    DEFINIR_JOGADOR_2:
         mov byte [jogador], 50
-        mov byte [CUR], 79     ; 'O'
-        jmp BOARD
+        mov byte [SIMBOLO_ATUAL], 79     ; 'O'
+        jmp TABULEIRO
 
 ; ------------- RENDERIZAÇÃO DO TABULEIRO (ESTILO GITHUB) ----------   
-BOARD: 
-    call clear_screen
+TABULEIRO: 
+    call limpar_tela
 
     mov edx, BR_len
     lea rsi, [BR]
-    call print_string
+    call imprimir_string
 
     ; Bloco Superior
     mov edx, L_V_len
     lea rsi, [L_V]
-    call print_string
+    call imprimir_string
     mov al, [C1]
     mov [L_V_C1], al
     mov al, [C2]
@@ -229,20 +229,20 @@ BOARD:
     mov [L_V_C3], al
     mov edx, L_VALS_len
     lea rsi, [L_VALS]
-    call print_string
+    call imprimir_string
     mov edx, L_V_len
     lea rsi, [L_V]
-    call print_string
+    call imprimir_string
 
     ; Divisória 1
     mov edx, L_DIV_len
     lea rsi, [L_DIV]
-    call print_string
+    call imprimir_string
 
     ; Bloco Central
     mov edx, L_V_len
     lea rsi, [L_V]
-    call print_string
+    call imprimir_string
     mov al, [C4]
     mov [L_V_C1], al
     mov al, [C5]
@@ -251,20 +251,20 @@ BOARD:
     mov [L_V_C3], al
     mov edx, L_VALS_len
     lea rsi, [L_VALS]
-    call print_string
+    call imprimir_string
     mov edx, L_V_len
     lea rsi, [L_V]
-    call print_string
+    call imprimir_string
 
     ; Divisória 2
     mov edx, L_DIV_len
     lea rsi, [L_DIV]
-    call print_string
+    call imprimir_string
 
     ; Bloco Inferior
     mov edx, L_V_len
     lea rsi, [L_V]
-    call print_string
+    call imprimir_string
     mov al, [C7]
     mov [L_V_C1], al
     mov al, [C8]
@@ -273,44 +273,44 @@ BOARD:
     mov [L_V_C3], al
     mov edx, L_VALS_len
     lea rsi, [L_VALS]
-    call print_string
+    call imprimir_string
     mov edx, L_V_len
     lea rsi, [L_V]
-    call print_string
+    call imprimir_string
      
     mov edx, BR_len
     lea rsi, [BR]
-    call print_string
+    call imprimir_string
      
-    cmp byte [DONE], 1
-    jz VICTORY
+    cmp byte [VENCEDOR_ENCONTRADO], 1
+    jz VITORIA
         
-    cmp byte [DR], 1
-    jz DRAW
+    cmp byte [FLAG_EMPATE], 1
+    jz EMPATE
 
 ; ------------ PROCESSAMENTO DE INPUT --------------
 INPUT:
-    mov edx, TURN_1_len
-    lea rsi, [TURN_1]
-    call print_string
+    mov edx, MSG_VEZ_1_len
+    lea rsi, [MSG_VEZ_1]
+    call imprimir_string
 
     mov edx, 1
-    lea rsi, [CUR]
-    call print_string
+    lea rsi, [SIMBOLO_ATUAL]
+    call imprimir_string
 
-    mov edx, TURN_2_len
-    lea rsi, [TURN_2]
-    call print_string
+    mov edx, MSG_VEZ_2_len
+    lea rsi, [MSG_VEZ_2]
+    call imprimir_string
         
-    call read_input
-    mov al, byte [IN_CHAR]
+    call ler_entrada
+    mov al, byte [CARACTERE_LIDO]
     
-    inc byte [MOVES] 
+    inc byte [JOGADAS] 
          
     mov bl, al 
     sub bl, 48 
         
-    mov cl, byte [CUR] 
+    mov cl, byte [SIMBOLO_ATUAL] 
         
     cmp bl, 1
     jz  C1U 
@@ -332,100 +332,100 @@ INPUT:
     jz  C9U  
     
     ; Input Inválido
-    dec byte [MOVES] 
+    dec byte [JOGADAS] 
             
-    mov edx, WI_len
-    lea rsi, [WI]
-    call print_string
+    mov edx, MSG_INVALIDA_len
+    lea rsi, [MSG_INVALIDA]
+    call imprimir_string
         
-    call read_input
-    jmp BOARD
+    call ler_entrada
+    jmp TABULEIRO
         
-TAKEN:
-    dec byte [MOVES]
+CELULA_OCUPADA:
+    dec byte [JOGADAS]
             
-    mov edx, TKN_len
-    lea rsi, [TKN]
-    call print_string  
+    mov edx, MSG_OCUPADA_len
+    lea rsi, [MSG_OCUPADA]
+    call imprimir_string  
         
-    call read_input
-    jmp BOARD
+    call ler_entrada
+    jmp TABULEIRO
         
     C1U:
         cmp byte [C1], 88 
-        jz TAKEN
+        jz CELULA_OCUPADA
         cmp byte [C1], 79 
-        jz TAKEN 
+        jz CELULA_OCUPADA 
         mov byte [C1], cl
-        jmp CHECK
+        jmp VERIFICA
              
     C2U:
         cmp byte [C2], 88
-        jz TAKEN
+        jz CELULA_OCUPADA
         cmp byte [C2], 79
-        jz TAKEN 
+        jz CELULA_OCUPADA 
         mov byte [C2], cl
-        jmp CHECK
+        jmp VERIFICA
     C3U:
         cmp byte [C3], 88
-        jz TAKEN
+        jz CELULA_OCUPADA
         cmp byte [C3], 79
-        jz TAKEN 
+        jz CELULA_OCUPADA 
         mov byte [C3], cl
-        jmp CHECK
+        jmp VERIFICA
     C4U: 
         cmp byte [C4], 88
-        jz TAKEN
+        jz CELULA_OCUPADA
         cmp byte [C4], 79
-        jz TAKEN 
+        jz CELULA_OCUPADA 
         mov byte [C4], cl
-        jmp CHECK 
+        jmp VERIFICA 
     C5U: 
         cmp byte [C5], 88
-        jz TAKEN
+        jz CELULA_OCUPADA
         cmp byte [C5], 79
-        jz TAKEN 
+        jz CELULA_OCUPADA 
         mov byte [C5], cl
-        jmp CHECK
+        jmp VERIFICA
     C6U:
         cmp byte [C6], 88
-        jz TAKEN
+        jz CELULA_OCUPADA
         cmp byte [C6], 79
-        jz TAKEN 
+        jz CELULA_OCUPADA 
         mov byte [C6], cl
-        jmp CHECK
+        jmp VERIFICA
     C7U: 
         cmp byte [C7], 88
-        jz TAKEN
+        jz CELULA_OCUPADA
         cmp byte [C7], 79
-        jz TAKEN 
+        jz CELULA_OCUPADA 
         mov byte [C7], cl
-        jmp CHECK 
+        jmp VERIFICA 
     C8U: 
         cmp byte [C8], 88
-        jz TAKEN
+        jz CELULA_OCUPADA
         cmp byte [C8], 79
-        jz TAKEN 
+        jz CELULA_OCUPADA 
         mov byte [C8], cl
-        jmp CHECK
+        jmp VERIFICA
     C9U:
         cmp byte [C9], 88
-        jz TAKEN
+        jz CELULA_OCUPADA
         cmp byte [C9], 79
-        jz TAKEN 
+        jz CELULA_OCUPADA 
         mov byte [C9], cl
-        jmp CHECK
+        jmp VERIFICA
 
 ; ----------- ROTINA REINICIAR PARTIDA -----------
-TRYAGAIN:
-    call clear_screen
+TENTAR_DE_NOVO:
+    call limpar_tela
         
-    mov edx, TRA_len
-    lea rsi, [TRA]
-    call print_string
+    mov edx, MSG_REINICIAR_len
+    lea rsi, [MSG_REINICIAR]
+    call imprimir_string
         
-    call read_input
-    mov al, byte [IN_CHAR]
+    call ler_entrada
+    mov al, byte [CARACTERE_LIDO]
     
     cmp al, 115  ; s
     jz INICIARTABULEIRO
@@ -433,27 +433,27 @@ TRYAGAIN:
     jz INICIARTABULEIRO
         
     cmp al, 110  ; n
-    jz EXIT
+    jz ENCERRAR
     cmp al, 78   ; N
-    jz EXIT  
+    jz ENCERRAR  
         
-    mov edx, WI_len
-    lea rsi, [WI]
-    call print_string
+    mov edx, MSG_INVALIDA_len
+    lea rsi, [MSG_INVALIDA]
+    call imprimir_string
         
-    call read_input
-    jmp TRYAGAIN     
+    call ler_entrada
+    jmp TENTAR_DE_NOVO     
 
-EXIT:
+ENCERRAR:
     mov edi, 0
-    mov eax, 60  ; sys_exit Linux
+    mov eax, 60  ; sys_ENCERRAR Linux
     syscall 
 
 
 segment readable writeable
 
 ;alterado Rosa
-WIN_LINES db 0,1,2  ; Linha 1
+LINHAS_VITORIA db 0,1,2  ; Linha 1
           db 3,4,5  ; Linha 2
           db 6,7,8  ; Linha 3
           db 0,3,6  ; Coluna 1
@@ -525,31 +525,31 @@ C8 db '8'
 C9 db '9'
 
 jogador db 49
-MOVES  db 0
-DONE   db 0
-DR     db 0 
-CUR    db 88
+JOGADAS  db 0
+VENCEDOR_ENCONTRADO   db 0
+FLAG_EMPATE db 0 
+SIMBOLO_ATUAL    db 88
 
 ; Strings de Interação
-TURN_1   db "Vez do "
-TURN_1_len = $ - TURN_1
-TURN_2   db ". Escolha uma celula: "
-TURN_2_len = $ - TURN_2
+MSG_VEZ_1   db "Vez do "
+MSG_VEZ_1_len = $ - MSG_VEZ_1
+MSG_VEZ_2   db ". Escolha uma celula: "
+MSG_VEZ_2_len = $ - MSG_VEZ_2
 
-TKN db "Esta celula ja foi ocupada! Pressione ENTER...", 0x0A
-TKN_len = $ - TKN 
+MSG_OCUPADA db "Esta celula ja foi ocupada! Pressione ENTER...", 0x0A
+MSG_OCUPADA_len = $ - MSG_OCUPADA 
 
 W1 db "Jogador "
 W1_len = $ - W1
 W2 db " venceu o jogo!", 0x0A
 W2_len = $ - W2
-DRW db "O jogo terminou em EMPATE!", 0x0A
-DRW_len = $ - DRW
+EMPATEW db "O jogo terminou em EMPATE!", 0x0A
+EMPATEW_len = $ - EMPATEW
 
-TRA db "Deseja jogar novamente? (s/n): "
-TRA_len = $ - TRA
-WI db "Entrada invalida! Pressione ENTER...", 0x0A
-WI_len = $ - WI
+MSG_REINICIAR db "Deseja jogar novamente? (s/n): "
+MSG_REINICIAR_len = $ - MSG_REINICIAR
+MSG_INVALIDA db "Entrada invalida! Pressione ENTER...", 0x0A
+MSG_INVALIDA_len = $ - MSG_INVALIDA
 
-IN_CHAR   db 0
-IN_BUFFER rb 16
+CARACTERE_LIDO   db 0
+BUFFER_ENTRADA rb 16

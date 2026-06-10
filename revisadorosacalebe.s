@@ -543,7 +543,7 @@ W1 db "Jogador "
 W1_len = $ - W1
 W2 db " venceu o jogo!", 0x0A
 W2_len = $ - W2
-EMPATEW db "O jogo terminou em EMPATE!", 0x0A
+EMPATEW db "Deu velha!", 0x0A
 EMPATEW_len = $ - EMPATEW
 
 MSG_REINICIAR db "Deseja jogar novamente? (s/n): "

@@ -155,37 +155,34 @@ EMPATE:
 
 ;aterado Rosa
 VERIFICA:
-    lea rsi, [LINHAS_VITORIA]  ; RSI agora aponta para o nosso "gabarito" de vitórias
-    mov rcx, 8            ; RCX será nosso contador de loop (temos 8 chances de ganhar)
-
+    lea rsi, [LINHAS_VITORIA]  
+    mov rcx, 8            
 CHECAR_LOOP:
-    ; Passo A: Lemos os 3 índices da combinação atual
-    movzx r8, byte [rsi]     ; Pega o 1º índice (ex: 0)
-    movzx r9, byte [rsi+1]   ; Pega o 2º índice (ex: 1)
-    movzx r10, byte [rsi+2]  ; Pega o 3º índice (ex: 2)
+    ; Passo A: leitura no array
+    movzx r8, byte [rsi]     
+    movzx r9, byte [rsi+1]   
+    movzx r10, byte [rsi+2]  
 
-    ; Passo B: Usamos esses índices para ler o tabuleiro real
-    lea rbx, [C1]            ; RBX aponta para o início do tabuleiro (C1)
-    mov al, byte [rbx + r8]  ; AL recebe o valor do tabuleiro no índice 1
-    mov dl, byte [rbx + r9]  ; DL recebe o valor do tabuleiro no índice 2
-    mov r11b, byte [rbx + r10] ; MUDADO: r11b no lugar de ah para evitar o erro de REX prefix
+    ; Passo B: leitura no tabuleiro
+    lea rbx, [C1]            
+    mov al, byte [rbx + r8]  
+    mov dl, byte [rbx + r9]  
+    mov r11b, byte [rbx + r10] 
 
-    ; Passo C: Comparamos os 3 valores (exatamente como você fazia antes)
+    ; Passo C: Comparar
     cmp al, dl
-    jnz PROXIMA_COMBINACAO            ; Se falhar, pula para testar a próxima combinação
-    cmp dl, r11b             ; CORRIGIDO: Agora compara com o registrador correto!
-    jnz PROXIMA_COMBINACAO            ; Se falhar, pula para a próxima
+    jnz PROXIMA_COMBINACAO            
+    cmp dl, r11b             
+    jnz PROXIMA_COMBINACAO            
 
-    ; Se sobreviveu aos pulos acima, alguém venceu!
     mov byte [VENCEDOR_ENCONTRADO], 1
     jmp TABULEIRO
 
 PROXIMA_COMBINACAO:
-    add rsi, 3            ; Avança o ponteiro RSI em 3 bytes (para a próxima linha do gabarito)
-    dec rcx               ; Diminui nosso contador de 8 para 7, 6...
-    jnz CHECAR_LOOP        ; Se o contador não for Zero, volta para CHECAR_LOOP
+    add rsi, 3            
+    dec rcx               
+    jnz CHECAR_LOOP       
 
-    ; Se o contador chegou a zero e não pulou para TABULEIRO, checa empate
     jmp CHECA_EMPATE
     
     CHECA_EMPATE:

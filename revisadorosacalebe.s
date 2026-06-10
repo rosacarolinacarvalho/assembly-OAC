@@ -206,7 +206,7 @@ TROCA_JOGADOR:
         mov byte [SIMBOLO_ATUAL], 79     ; 'O'
         jmp TABULEIRO
 
-; ------------- RENDERIZAÇÃO DO TABULEIRO (ESTILO GITHUB) ----------   
+; ------------- RENDERIZAÇÃO DO TABULEIRO ----------   
 TABULEIRO: 
     call limpar_tela
 
@@ -460,7 +460,7 @@ LINHAS_VITORIA db 0,1,2  ; Linha 1
           db 2,4,6  ; Diagonal Secundária
 ;até aqui Rosa
 
-; Estruturação Visual Baseada na Imagem do Github
+; Estruturação Visual
 ANSI_cls     db 0x1B, "[2J", 0x1B, "[H"
 ANSI_cls_len = $ - ANSI_cls
 BR           db 0x0A
